@@ -1,90 +1,52 @@
+import model.Atendente;
+import model.Produto;
+import model.Venda;
+import service.ProdutoService;
+import service.VendaService;
+import repository.VendaRepository; // Main ainda precisa dele para injetar no serviço
+import excecoes.EstoqueInsuficienteException;
+import excecoes.ProdutoNaoEncontradoException;
 import database.FirebaseConfig;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.concurrent.CountDownLatch;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
-        // 1. Inicializa a conexão com o Firebase
+    public static void main(String[] args) {
+        // 1. Inicialização
         FirebaseConfig.initialize();
 
-        // 2. Obtém a referência para o nó raiz do banco de dados
-        DatabaseReference ref = FirebaseConfig.getDatabaseReference();
-        System.out.println("Referência do banco de dados obtida.");
+        // 2. Injeção de Dependências
+        ProdutoService produtoService = new ProdutoService();
+        VendaRepository vendaRepo = new VendaRepository();
+        VendaService vendaService = new VendaService(produtoService, vendaRepo);
 
-        // MUDANÇA 1: Inicialize o Latch para esperar por DUAS operações.
-        CountDownLatch latch = new CountDownLatch(2);
+        // 3. Setup do Cenário
+        Atendente atendente = new Atendente(1, "Lorena", "lborges", "1234");
+        Produto camisa = new Produto("prod001", "Roupas", "Camisa Polo", 79.90, 10);
 
-        // --- TESTE DE ESCRITA ---
-        DatabaseReference usersRef = ref.child("usuarios");
-        UserPOO usuarioTeste = new UserPOO("João da Silva", "joao.silva@email.com", 30);
+        // Cadastra o produto usando o serviço
+        produtoService.cadastrarProduto(camisa);
+        System.out.println("Produto cadastrado: " + camisa.getNome());
 
-        usersRef.child("user01").setValue(usuarioTeste, (databaseError, databaseReference) -> {
-            if (databaseError != null) {
-                System.out.println("Falha ao salvar os dados: " + databaseError.getMessage());
-            } else {
-                System.out.println("Dados salvos com sucesso!");
-            }
-            // MUDANÇA 2: Avise o Latch que a operação de escrita terminou.
-            latch.countDown();
-        });
+        // 4. Execução da Lógica de Negócio
+        try {
+            System.out.println("\nRealizando uma venda...");
+            // A Main só chama o serviço. O serviço faz todo o resto.
+            Venda venda = vendaService.registrarVenda("1", atendente, "prod001", 2);
 
-        // --- TESTE DE LEITURA ---
-        DatabaseReference userToReadRef = ref.child("usuarios").child("user01");
+            System.out.println("Venda realizada com sucesso!");
+            System.out.println("ID da Venda: " + venda.getId());
+            System.out.println("Produto: " + venda.getProduto().getNome());
+            System.out.println("Quantidade: " + venda.getQuantidade());
+            System.out.println("Valor total: R$" + venda.getValorTotal());
 
-        userToReadRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserPOO usuarioLido = dataSnapshot.getValue(UserPOO.class);
-                if (usuarioLido != null) {
-                    System.out.println("--- Leitura do Banco de Dados ---");
-                    System.out.println("Nome: " + usuarioLido.getNome());
-                    System.out.println("Email: " + usuarioLido.getEmail());
-                    System.out.println("Idade: " + usuarioLido.getIdade());
-                } else {
-                    System.out.println("Usuário não encontrado.");
-                }
-                // Avise o Latch que a operação de leitura terminou.
-                latch.countDown();
-            }
+            // Verifica o estoque restante
+            Produto produtoAtualizado = produtoService.buscarProduto("prod001");
+            System.out.println("Estoque restante da camisa: " + produtoAtualizado.getQuantidade()); // Deve ser 8
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("A leitura falhou: " + databaseError.getCode());
-                latch.countDown();
-            }
-        });
-
-        System.out.println("Aguardando as operações de escrita e leitura...");
-        latch.await(); // Agora o programa vai pausar aqui até que countDown() seja chamado DUAS VEZES.
-
-        System.out.println("Teste concluído.");
-
-        System.exit(0);
+        } catch (EstoqueInsuficienteException | ProdutoNaoEncontradoException e) {
+            System.err.println("Falha ao realizar venda: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Ocorreu um erro inesperado: " + e.getMessage());
+        }
     }
-}
-
-class UserPOO {
-    private String nome;
-    private String email;
-    private int idade;
-
-    // Construtor vazio é necessário para a desserialização do Firebase
-    public UserPOO() {}
-
-    public UserPOO(String nome, String email, int idade) {
-        this.nome = nome;
-        this.email = email;
-        this.idade = idade;
-    }
-
-    // Getters e Setters
-    public String getNome() { return nome; }
-    public String getEmail() { return email; }
-    public int getIdade() { return idade; }
 }

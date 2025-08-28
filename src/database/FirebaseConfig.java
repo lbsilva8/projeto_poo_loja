@@ -15,19 +15,18 @@ public class FirebaseConfig {
 
     public static void initialize() {
         try {
-            // Carrega o arquivo de credenciais da pasta resources
-            FileInputStream serviceAccount =
-                    new FileInputStream("src/main/resources/serviceAccountKey.json"); // Ajuste o caminho se necessário
+            // Caminho do arquivo JSON na raiz do src
+            FileInputStream serviceAccount = new FileInputStream("src/serviceAccountKey.json");
 
-            // URL do seu Realtime Database (pegue no console do Firebase)
-            String databaseUrl = "https://SEU-PROJETO-ID.firebaseio.com"; // SUBSTITUA PELO URL DO SEU DB
+            // URL do seu Realtime Database (pegar no console do Firebase)
+            String databaseUrl = "https://projeto-poo-43e7d-default-rtdb.firebaseio.com/"; // 🔥 Troque pelo URL correto
 
-            FirebaseOptions options = new FirebaseOptions.Builder()
+            FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl(databaseUrl)
                     .build();
 
-            // Inicializa o app do Firebase, mas somente se não foi inicializado ainda
+            // Inicializa o app do Firebase, mas somente se ainda não tiver inicializado
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
             }
@@ -37,14 +36,12 @@ public class FirebaseConfig {
 
         } catch (IOException e) {
             System.err.println("Erro ao inicializar o Firebase: " + e.getMessage());
-            // Lançar uma exceção ou tratar o erro de forma apropriada para sua aplicação
             throw new RuntimeException(e);
         }
     }
 
     public static DatabaseReference getDatabaseReference() {
         if (firebaseDatabase == null) {
-            // Garante que a inicialização ocorreu
             initialize();
         }
         return firebaseDatabase.getReference();

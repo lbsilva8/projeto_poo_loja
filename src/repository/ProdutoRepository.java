@@ -1,0 +1,62 @@
+package repository;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.api.core.ApiFuture;
+import database.FirebaseConfig;
+import model.Produto;
+import interfaces.ICrud;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+
+public class ProdutoRepository implements ICrud<Produto> {
+
+    private DatabaseReference ref;
+
+    public ProdutoRepository() {
+        this.ref = FirebaseConfig.getDatabaseReference().child("produtos");
+    }
+
+    public ApiFuture<Void> salvar(Produto produto) {
+        ref.child(produto.getId()).setValueAsync(produto);
+        return null;
+    }
+
+    public ApiFuture<Void> atualizar(Produto produto) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("quantidade", produto.getQuantidade());
+        return ref.child(produto.getId()).updateChildrenAsync(updates);    }
+
+    public ApiFuture<Void> deletar(String id) {
+        ref.child(id).removeValueAsync();
+        return null;
+    }
+
+    public CompletableFuture<Produto> buscar(String id) {
+        CompletableFuture<Produto> future = new CompletableFuture<>();
+
+        ref.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Produto produto = dataSnapshot.getValue(Produto.class);
+                    future.complete(produto);
+                } else {
+                    future.complete(null); // Retorna nulo se não encontrar
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                future.completeExceptionally(databaseError.toException());
+            }
+        });
+
+        return future;
+    }
+}
