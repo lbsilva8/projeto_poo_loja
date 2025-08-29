@@ -8,7 +8,6 @@ public class Produto {
     private double preco;
     private int quantidade;
 
-    public Produto() {}
 
     public Produto(String id, String tipo ,String nome, double preco, int quantidade) {
         this.id = id;
@@ -17,6 +16,8 @@ public class Produto {
         this.preco = preco;
         this.quantidade = quantidade;
     }
+
+    public Produto() {}
 
     public void reduzirEstoque(int qtd) throws EstoqueInsuficienteException {
         if (qtd > quantidade) {

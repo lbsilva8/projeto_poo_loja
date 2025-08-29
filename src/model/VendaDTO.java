@@ -2,38 +2,78 @@ package model;
 
 public class VendaDTO {
     private String id;
-    private String nomeAtendente;
-    private String usuarioAtendente;
-    private String nomeProduto;
-    private double precoProduto;
+    private int matriculaUsuario;
+    private String idProduto;
     private int quantidade;
     private String dataHora;
-
-    public VendaDTO() {} // necessário para Firebase
+    private String formaPagamento; // NOVO CAMPO (como String)
+    private double valorTotal;
 
     public VendaDTO(Venda venda) {
         this.id = venda.getId();
-        this.nomeAtendente = venda.getAtendente().getNome();
-        this.usuarioAtendente = venda.getAtendente().getUsuario();
-        this.nomeProduto = venda.getProduto().getNome();
-        this.precoProduto = venda.getProduto().getPreco();
+        this.matriculaUsuario = venda.getUsuario().getMatricula();
+        this.idProduto = venda.getProduto().getId();
         this.quantidade = venda.getQuantidade();
         this.dataHora = venda.getDataHora();
+        this.formaPagamento = venda.getFormaPagamento().name();
+        this.valorTotal = venda.getValorTotal(); // <-- Pegamos o valor já calculado
     }
 
-    // Getters e setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public String getNomeAtendente() { return nomeAtendente; }
-    public void setNomeAtendente(String nomeAtendente) { this.nomeAtendente = nomeAtendente; }
-    public String getUsuarioAtendente() { return usuarioAtendente; }
-    public void setUsuarioAtendente(String usuarioAtendente) { this.usuarioAtendente = usuarioAtendente; }
-    public String getNomeProduto() { return nomeProduto; }
-    public void setNomeProduto(String nomeProduto) { this.nomeProduto = nomeProduto; }
-    public double getPrecoProduto() { return precoProduto; }
-    public void setPrecoProduto(double precoProduto) { this.precoProduto = precoProduto; }
-    public int getQuantidade() { return quantidade; }
-    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
-    public String getDataHora() { return dataHora; }
-    public void setDataHora(String dataHora) { this.dataHora = dataHora; }
+    public VendaDTO() {}
+
+    public double getValorTotal() {
+        return valorTotal;
+    }
+
+    public void setValorTotal(double valorTotal) {
+        this.valorTotal = valorTotal;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getMatriculaUsuario() {
+        return matriculaUsuario;
+    }
+
+    public void setMatriculaUsuario(int matriculaUsuario) {
+        this.matriculaUsuario = matriculaUsuario;
+    }
+
+    public String getIdProduto() {
+        return idProduto;
+    }
+
+    public void setIdProduto(String idProduto) {
+        this.idProduto = idProduto;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public String getDataHora() {
+        return dataHora;
+    }
+
+    public void setDataHora(String dataHora) {
+        this.dataHora = dataHora;
+    }
+
+    public String getFormaPagamento() {
+        return formaPagamento;
+    }
+
+    public void setFormaPagamento(String formaPagamento) {
+        this.formaPagamento = formaPagamento;
+    }
 }

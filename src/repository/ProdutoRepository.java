@@ -5,6 +5,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.api.core.ApiFuture;
+
 import database.FirebaseConfig;
 import model.Produto;
 import interfaces.ICrud;
@@ -22,21 +23,22 @@ public class ProdutoRepository implements ICrud<Produto> {
         this.ref = FirebaseConfig.getDatabaseReference().child("produtos");
     }
 
+    @Override
     public ApiFuture<Void> salvar(Produto produto) {
-        ref.child(produto.getId()).setValueAsync(produto);
-        return null;
+        return ref.child(produto.getId()).setValueAsync(produto);
     }
 
+    @Override
     public ApiFuture<Void> atualizar(Produto produto) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("quantidade", produto.getQuantidade());
-        return ref.child(produto.getId()).updateChildrenAsync(updates);    }
-
-    public ApiFuture<Void> deletar(String id) {
-        ref.child(id).removeValueAsync();
-        return null;
+        return ref.child(produto.getId()).setValueAsync(produto);
     }
 
+    @Override
+    public ApiFuture<Void> deletar(String id) {
+        return ref.child(id).removeValueAsync();
+    }
+
+    @Override
     public CompletableFuture<Produto> buscar(String id) {
         CompletableFuture<Produto> future = new CompletableFuture<>();
 
@@ -47,7 +49,7 @@ public class ProdutoRepository implements ICrud<Produto> {
                     Produto produto = dataSnapshot.getValue(Produto.class);
                     future.complete(produto);
                 } else {
-                    future.complete(null); // Retorna nulo se não encontrar
+                    future.complete(null);
                 }
             }
 

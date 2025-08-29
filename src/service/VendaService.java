@@ -1,11 +1,11 @@
 package service;
 
-import model.Atendente;
+import model.FormaPagamento;
 import model.Produto;
 import model.Venda;
+import model.Usuario;
 import excecoes.*;
-import repository.VendaRepository; // Precisa do repositório de Venda!
-
+import repository.VendaRepository;
 
 public class VendaService {
     private final ProdutoService produtoService;
@@ -16,22 +16,21 @@ public class VendaService {
         this.vendaRepository = vendaRepository;
     }
 
-    public Venda registrarVenda(String id, Atendente atendente, String produtoId, int quantidade)
+    public Venda registrarVenda(Usuario usuario, String produtoId, int quantidade, FormaPagamento formaPagamento, double desconto)
             throws ProdutoNaoEncontradoException, EstoqueInsuficienteException {
-        // 1. Busca o produto (responsabilidade do ProdutoService)
+
         Produto produto = produtoService.buscarProduto(produtoId);
 
-        // 2. Reduz o estoque (responsabilidade do ProdutoService)
+        double valorBruto = produto.getPreco() * quantidade;
+        if (desconto < 0 || desconto > valorBruto) {
+            throw new IllegalArgumentException("ERRO: O valor do desconto é inválido.");
+        }
         produtoService.reduzirEstoque(produtoId, quantidade);
-
-        // 3. Cria a Venda
-        // Geração de ID único para a venda
         String novoIdVenda = java.util.UUID.randomUUID().toString();
-        Venda novaVenda = new Venda(novoIdVenda, atendente, produto, quantidade);
 
-        // 4. Salva a venda no banco (responsabilidade do VendaRepository)
+        Venda novaVenda = new Venda(novoIdVenda, usuario, produto, quantidade, formaPagamento, desconto);
+
         vendaRepository.salvar(novaVenda);
-
         return novaVenda;
     }
 }

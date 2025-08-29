@@ -1,25 +1,43 @@
 package model;
+
 import java.time.LocalDateTime;
 
 public class Venda {
     private String id;
-    private Atendente atendente;
+    private Usuario usuario;
     private Produto produto;
     private int quantidade;
     private String dataHora;
+    private FormaPagamento formaPagamento;
+    private double valorTotal;
 
-    public Venda() {}
-
-    public Venda(String id, Atendente atendente, Produto produto, int quantidade) {
+    public Venda(String id, Usuario usuario, Produto produto, int quantidade, FormaPagamento formaPagamento, double desconto) {
         this.id = id;
-        this.atendente = atendente;
+        this.usuario = usuario;
         this.produto = produto;
         this.quantidade = quantidade;
         this.dataHora = LocalDateTime.now().toString();
+        this.formaPagamento = formaPagamento;
+        double valorBruto = produto.getPreco() * quantidade;
+        this.valorTotal = valorBruto - desconto;
     }
 
+    public Venda() {}
+
     public double getValorTotal() {
-        return produto.getPreco() * quantidade;
+        return valorTotal;
+    }
+
+    public FormaPagamento getFormaPagamento() {
+        return formaPagamento;
+    }
+
+    public void setValorTotal(double valorTotal) {
+        this.valorTotal = valorTotal;
+    }
+
+    public void setFormaPagamento(FormaPagamento formaPagamento) {
+        this.formaPagamento = formaPagamento;
     }
 
     public String getId() {
@@ -30,12 +48,12 @@ public class Venda {
         this.id = id;
     }
 
-    public Atendente getAtendente() {
-        return atendente;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setAtendente(Atendente atendente) {
-        this.atendente = atendente;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Produto getProduto() {
