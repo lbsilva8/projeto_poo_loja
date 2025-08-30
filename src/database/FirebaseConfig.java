@@ -19,7 +19,7 @@ public class FirebaseConfig {
             FileInputStream serviceAccount = new FileInputStream("src/serviceAccountKey.json");
 
             // URL do seu Realtime Database (pegar no console do Firebase)
-            String databaseUrl = "https://projeto-poo-43e7d-default-rtdb.firebaseio.com/"; // 🔥 Troque pelo URL correto
+            String databaseUrl = "https://projeto-poo-43e7d-default-rtdb.firebaseio.com/"; // Troque pelo URL correto
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
