@@ -6,11 +6,21 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import java.util.List;
+
 import model.Produto;
 import service.ProdutoService;
 
-import java.util.List;
 
+/**
+ * Classe para a tela de busca de produtos.
+ * Esta classe gerencia a janela pop-up utilizada para listar e selecionar um produto.
+ * Suas responsabilidades incluem popular a {@link TableView} com dados do
+ * {@link ProdutoService} e retornar o ID do produto selecionado para a tela que a invocou.
+ *
+ * @see VendaViewController
+ * @see EstoqueViewController
+ */
 public class BuscaProdutoViewController {
 
     @FXML private TableView<Produto> tabelaProdutos;
@@ -22,6 +32,11 @@ public class BuscaProdutoViewController {
     private final ProdutoService produtoService = new ProdutoService();
     private String produtoIdSelecionado = null;
 
+    /**
+     * Metodo de inicialização do JavaFX, chamado automaticamente após o FXML ser carregado.
+     * Configura as colunas da tabela para se vincularem aos atributos da classe {@link Produto}
+     * e carrega a lista inicial de todos os produtos do banco de dados.
+     */
     @FXML
     public void initialize() {
         // Configura as colunas para buscar os valores dos atributos da classe Produto
@@ -35,6 +50,11 @@ public class BuscaProdutoViewController {
         tabelaProdutos.setItems(FXCollections.observableArrayList(todosProdutos));
     }
 
+    /**
+     * Manipula o evento de clique do botão "Selecionar".
+     * Obtém o item atualmente selecionado na tabela, armazena seu ID e fecha
+     * a janela pop-up.
+     */
     @FXML
     private void handleSelecionarProduto() {
         Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
@@ -47,7 +67,10 @@ public class BuscaProdutoViewController {
     }
 
     /**
-     * Método para a tela de venda poder pegar o ID do produto que foi selecionado.
+     * Permite que a classe que abriu esta janela recupere o ID do produto que foi
+     * selecionado pelo usuário.
+     * @return O ID do produto selecionado como uma {@code String}, ou {@code null} se
+     * nenhum produto foi selecionado antes de a janela ser fechada.
      */
     public String getProdutoIdSelecionado() {
         return produtoIdSelecionado;

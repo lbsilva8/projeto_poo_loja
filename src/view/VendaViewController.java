@@ -21,6 +21,16 @@ import repository.VendaRepository;
 import service.ProdutoService;
 import service.VendaService;
 
+/**
+ * Classe para a tela de registro de vendas ({@code VendaView.fxml}).
+ * Esta classe gerencia o formulário de vendas, capturando as entradas do usuário,
+ * orquestrando a busca de produtos através de uma janela modal e delegando a lógica
+ * de negócio para o {@link VendaService}.
+ *
+ * @see MainViewController
+ * @see BuscaProdutoViewController
+ * @see VendaService
+ */
 public class VendaViewController {
 
     @FXML private TextField produtoIdField;
@@ -34,47 +44,55 @@ public class VendaViewController {
     private final VendaService vendaService = new VendaService(produtoService, new VendaRepository());
 
     /**
-     * Este método é chamado automaticamente pelo JavaFX após o FXML ser carregado.
-     * Usado para configurar componentes.
+     * Metodo de inicialização do JavaFX, chamado automaticamente após o FXML ser carregado.
+     * Configura os componentes iniciais da tela, como o preenchimento do ComboBox
+     * de formas de pagamento.
      */
     @FXML
     public void initialize() {
         // Preenche o ComboBox com as opções do Enum FormaPagamento
         formaPagamentoBox.getItems().setAll(FormaPagamento.values());
-        formaPagamentoBox.getSelectionModel().selectFirst(); // Seleciona o primeiro por padrão
+        formaPagamentoBox.getSelectionModel().selectFirst();
     }
 
     /**
      * Recebe o usuário logado da tela principal para associá-lo à venda.
+     * Este metodo é o ponto de entrada de dados para este controller.
+     *
+     * @param usuario O objeto {@link Usuario} que está realizando a venda.
      */
     public void inicializarDados(Usuario usuario) {
         this.usuarioLogado = usuario;
     }
 
+    /**
+     * Manipula o clique no botão "Buscar", abrindo uma janela modal para a
+     * seleção de produtos.
+     * Após a janela de busca ser fechada, o ID do produto selecionado é
+     * preenchido no campo de texto correspondente.
+     */
     @FXML
     private void handleBuscarProduto() {
         try {
-            // 1. Carrega o FXML da tela de busca
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/BuscaProdutoView.fxml"));
             Parent root = loader.load();
 
-            // 2. Pega o controller da tela de busca
             BuscaProdutoViewController buscaController = loader.getController();
 
-            // 3. Cria e configura a nova janela (Stage) como um pop-up modal
+            // Cria e configura a nova janela (Stage) como um pop-up modal
             Stage buscaStage = new Stage();
             buscaStage.setTitle("Buscar Produto");
             buscaStage.setScene(new Scene(root));
-            buscaStage.initModality(Modality.APPLICATION_MODAL); // Bloqueia a janela de vendas
+            buscaStage.initModality(Modality.APPLICATION_MODAL);
             buscaStage.setResizable(false);
 
-            // 4. Mostra a janela e ESPERA até que ela seja fechada
+            //Mostra a janela e ESPERA até que ela seja fechada
             buscaStage.showAndWait();
 
-            // 5. Após fechar, pega o resultado do controller da busca
+            //Após fechar, pega o resultado do controller da busca
             String idSelecionado = buscaController.getProdutoIdSelecionado();
             if (idSelecionado != null) {
-                // 6. Coloca o ID selecionado no campo de texto da tela de vendas
+                //Coloca o ID selecionado no campo de texto da tela de vendas
                 produtoIdField.setText(idSelecionado);
             }
 
@@ -84,6 +102,12 @@ public class VendaViewController {
         }
     }
 
+    /**
+     * Manipula o clique no botão "Registrar Venda".
+     * Coleta todos os dados do formulário, valida as entradas numéricas e chama
+     * o {@link VendaService} para processar a venda. Exibe alertas para o usuário
+     * em caso de erro ou uma mensagem de sucesso.
+     */
     @FXML
     private void handleRegistrarVenda() {
         try {
@@ -107,6 +131,9 @@ public class VendaViewController {
         }
     }
 
+    /**
+     * Helper method para limpar todos os campos do formulário após uma operação bem-sucedida.
+     */
     private void limparCampos() {
         produtoIdField.clear();
         quantidadeField.clear();
@@ -114,6 +141,12 @@ public class VendaViewController {
         formaPagamentoBox.getSelectionModel().selectFirst();
     }
 
+    /**
+     * Helper method para exibir uma janela de alerta de erro para o usuário.
+     *
+     * @param titulo O título da janela de alerta.
+     * @param mensagem A mensagem de erro a ser exibida.
+     */
     private void exibirAlerta(String titulo, String mensagem) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titulo);
