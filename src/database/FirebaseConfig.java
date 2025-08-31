@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class FirebaseConfig {
 
@@ -23,7 +24,13 @@ public class FirebaseConfig {
     public static void initialize() {
         try {
             // Caminho do arquivo JSON na raiz do src
-            FileInputStream serviceAccount = new FileInputStream("src/serviceAccountKey.json");
+            //FileInputStream serviceAccount = new FileInputStream("/serviceAccountKey.json");
+            InputStream serviceAccount = FirebaseConfig.class
+                    .getResourceAsStream("/serviceAccountKey.json");
+
+            if (serviceAccount == null) {
+                throw new RuntimeException("ERRO: Não foi possível encontrar o arquivo 'serviceAccountKey.json'. Verifique se ele está na pasta 'resources'.");
+            }
 
             // URL do seu Realtime Database (pegar no console do Firebase)
             String databaseUrl = "https://projeto-poo-43e7d-default-rtdb.firebaseio.com/"; // Troque pelo URL correto
