@@ -8,6 +8,8 @@ import model.Gerente;
 import model.Usuario;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementação do padrão Repository para a entidade {@link Usuario} e suas subclasses.
@@ -75,6 +77,67 @@ public class UsuarioRepository {
             }
         });
 
+        return future;
+    }
+
+    /**
+     * Busca um usuário diretamente pela sua chave (matrícula).
+     * @param matricula A matrícula a ser buscada.
+     * @return Um CompletableFuture que será completado com o Usuário, ou null se não existir.
+     */
+    public CompletableFuture<Usuario> buscarPorMatricula(int matricula) {
+        CompletableFuture<Usuario> future = new CompletableFuture<>();
+        ref.child(String.valueOf(matricula)).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Reutiliza a mesma lógica de descobrir o cargo para criar o objeto correto
+                    String cargo = dataSnapshot.child("cargo").getValue(String.class);
+                    Usuario usuario = "GERENTE".equals(cargo)
+                            ? dataSnapshot.getValue(Gerente.class)
+                            : dataSnapshot.getValue(Atendente.class);
+                    future.complete(usuario);
+                } else {
+                    future.complete(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                future.completeExceptionally(databaseError.toException());
+            }
+        });
+        return future;
+    }
+
+    /**
+     * Busca todos os usuários (Gerentes e Atendentes) no banco de dados.
+     * @return Um CompletableFuture que será completado com uma Lista de Usuários.
+     */
+    public CompletableFuture<List<Usuario>> buscarTodos() {
+        CompletableFuture<List<Usuario>> future = new CompletableFuture<>();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Usuario> usuarios = new ArrayList<>();
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        // Reutiliza a lógica de descobrir o cargo para criar o objeto correto
+                        String cargo = snapshot.child("cargo").getValue(String.class);
+                        Usuario usuario = "GERENTE".equals(cargo)
+                                ? snapshot.getValue(Gerente.class)
+                                : snapshot.getValue(Atendente.class);
+                        usuarios.add(usuario);
+                    }
+                }
+                future.complete(usuarios);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                future.completeExceptionally(databaseError.toException());
+            }
+        });
         return future;
     }
 

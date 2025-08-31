@@ -1,0 +1,43 @@
+/* Este será o estilo para nosso HBox, a nova barra de menu.
+  Fundo preto e altura fixa.
+*/
+.custom-menu-bar {
+    -fx-background-color: black;
+    -fx-alignment: center; /* Centraliza os itens dentro do HBox */
+}
+
+/* Estilo para os MenuButtons.
+  Fundo transparente, texto branco.
+*/
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+}
+
+.menu-button .label {
+    -fx-text-fill: white;
+}
+
+/* Efeito ao passar o mouse sobre um MenuButton */
+.menu-button:hover {
+    -fx-background-color: #333333;
+}
+
+/* Efeito quando o menu de um MenuButton está aberto */
+.menu-button:showing {
+    -fx-background-color: #333333;
+}
+
+
+/* Estilo para os itens do dropdown (para que o texto seja legível) */
+.menu-item .label {
+    -fx-text-fill: black;
+}
+
+.menu-item:focused {
+    -fx-background-color: #0078D7;
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: white;
+}

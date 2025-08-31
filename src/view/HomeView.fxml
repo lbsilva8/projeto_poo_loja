@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="rootPane" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.HomeViewController">
+
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
+
+    <children>
+        <ImageView fx:id="backgroundImageView" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../imagens/home.png" />
+            </image>
+        </ImageView>
+
+        <HBox styleClass="custom-menu-bar" StackPane.alignment="TOP_CENTER" prefHeight="30.0" maxHeight="30.0">
+            <children>
+                <MenuButton mnemonicParsing="false" text="Acesso">
+                    <items>
+                        <MenuItem fx:id="loginMenuItem" mnemonicParsing="false" onAction="#handleLoginAction" text="Login" />
+                    </items>
+                </MenuButton>
+            </children>
+        </HBox>
+    </children>
+</StackPane>

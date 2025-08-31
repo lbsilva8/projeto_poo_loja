@@ -33,9 +33,11 @@ public class MainViewController {
     @FXML
     private Button cadastrarProdutoButton;
     @FXML
-    private Button adicionarEstoqueButton;
+    private Button gerenciarEstoqueButton;
     @FXML
     private Button cadastrarAtendenteButton;
+    @FXML
+    private Button gerenciarAtendentesButton;
     @FXML
     private VBox centerPane;
 
@@ -54,10 +56,18 @@ public class MainViewController {
         welcomeLabel.setText("Bem-vindo(a), " + usuarioLogado.getNome() + "!");
 
         // Regra de autorização da View: esconde botões se o usuário não for Gerente.
-        if (!(usuarioLogado instanceof Gerente)) {
+        if (usuarioLogado instanceof Gerente) {
+            // Se for Gerente, GARANTE que os botões estão visíveis.
+            cadastrarProdutoButton.setVisible(true);
+            cadastrarAtendenteButton.setVisible(true);
+            gerenciarAtendentesButton.setVisible(true);
+            gerenciarEstoqueButton.setText("Gerenciar Estoque"); // Texto completo para o gerente
+        } else {
+            // Se for Atendente, GARANTE que os botões estão escondidos.
             cadastrarProdutoButton.setVisible(false);
-            adicionarEstoqueButton.setVisible(false);
             cadastrarAtendenteButton.setVisible(false);
+            gerenciarAtendentesButton.setVisible(false);
+            gerenciarEstoqueButton.setText("Visualizar Estoque"); // Texto diferente para o atendente
         }
     }
 
@@ -67,7 +77,6 @@ public class MainViewController {
      */
     @FXML
     private void handleRealizarVenda(ActionEvent event) {
-        System.out.println("Carregando tela de venda...");
         carregarView("/view/VendaView.fxml");
     }
 
@@ -76,9 +85,27 @@ public class MainViewController {
      * @param event O evento de ação do clique.
      */
     @FXML
-    private void handleAdicionarEstoque(ActionEvent event) {
-        System.out.println("Carregando tela de adicionar estoque...");
+    private void handleGerenciarEstoque(ActionEvent event) {
         carregarView("/view/EstoqueView.fxml");
+    }
+
+    @FXML
+    private void handleCadastrarAtendente(ActionEvent event) {
+        carregarView("/view/AtendenteCadastroView.fxml");
+    }
+
+    @FXML
+    private void handleGerenciarAtendentes(ActionEvent event) {
+        carregarView("/view/GerenciarAtendentesView.fxml");
+    }
+
+    /**
+     * Manipula o clique no botão "Cadastrar Produto".
+     * @param event O evento de ação do clique.
+     */
+    @FXML
+    private void handleCadastrarProduto(ActionEvent event) {
+        carregarView("/view/ProdutoCadastroView.fxml");
     }
 
     /**
@@ -93,11 +120,16 @@ public class MainViewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node view = loader.load();
-
-            // Pega o controller da view carregada para passar dados, se necessário
             Object controller = loader.getController();
+
             if (controller instanceof VendaViewController) {
                 ((VendaViewController) controller).inicializarDados(this.usuarioLogado);
+            } else if (controller instanceof AtendenteCadastroViewController) {
+                ((AtendenteCadastroViewController) controller).inicializarDados(this.usuarioLogado);
+            } else if (controller instanceof GerenciarAtendentesViewController) {
+                ((GerenciarAtendentesViewController) controller).inicializarDados(this.usuarioLogado);
+            } else if (controller instanceof EstoqueViewController) {
+                ((EstoqueViewController) controller).inicializarDados(this.usuarioLogado);
             }
 
             centerPane.getChildren().setAll(view);

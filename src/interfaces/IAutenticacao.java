@@ -11,11 +11,10 @@ public interface IAutenticacao {
     /**
      * Valida as credenciais fornecidas contra as credenciais do objeto.
      *
-     * @param usuario O nome de usuário a ser verificado.
-     * @param senha   A senha a ser verificada.
+     * @param senhaDigitada   A senha a ser verificada.
      * @return {@code true} se as credenciais forem válidas e a autenticação for bem-sucedida.
      * @throws Exception Lançada se a autenticação falhar, geralmente uma
      * {@link excecoes.AutenticacaoException} contendo o motivo da falha.
      */
-    boolean autenticar(String usuario, String senha) throws Exception;
+    boolean autenticar(String senhaDigitada) throws Exception;
 }

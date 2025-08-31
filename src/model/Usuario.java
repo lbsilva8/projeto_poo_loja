@@ -2,6 +2,8 @@ package model;
 
 import interfaces.IAutenticacao;
 import excecoes.AutenticacaoException;
+import org.mindrot.jbcrypt.BCrypt;
+
 
 /**
  * Classe base abstrata que define a estrutura e o comportamento comum para todos
@@ -19,6 +21,7 @@ public abstract class Usuario implements IAutenticacao {
     private String usuario;
     private String senha;
     private String cargo;
+    private boolean ativo = true;
 
     /**
      * Construtor para ser utilizado pelas subclasses para inicializar os atributos comuns.
@@ -49,8 +52,9 @@ public abstract class Usuario implements IAutenticacao {
      * @throws AutenticacaoException se o nome de usuário ou a senha não corresponderem.
      */
     @Override
-    public boolean autenticar(String usuario, String senha) throws AutenticacaoException {
-        if (!this.usuario.equals(usuario) || !this.senha.equals(senha)) {
+    public boolean autenticar(String senhaDigitada) throws AutenticacaoException {
+        // A senha armazenada no objeto agora é o HASH
+        if (!BCrypt.checkpw(senhaDigitada, this.getSenha())) {
             throw new AutenticacaoException("Usuário ou senha inválidos");
         }
         return true;
@@ -121,6 +125,15 @@ public abstract class Usuario implements IAutenticacao {
     }
 
     /**
+     * Metodo de negócio para definir ou alterar uma senha.
+     * Recebe uma senha em texto plano e a armazena de forma criptografada.
+     * @param senhaPlana A senha em texto plano a ser criptografada.
+     */
+    public void definirNovaSenha(String senhaPlana) {
+        this.senha = BCrypt.hashpw(senhaPlana, BCrypt.gensalt());
+    }
+
+    /**
      * Retorna o cargo (papel) do usuário no sistema.
      * @return O cargo do usuário (ex: "GERENTE").
      */
@@ -134,5 +147,21 @@ public abstract class Usuario implements IAutenticacao {
      */
     public void setCargo(String cargo) {
         this.cargo = cargo;
+    }
+
+    /**
+     * Retorna status do usuário no sistema.
+     * @return O status do usuário.
+     */
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    /**
+     * Define o status do usuário no sistema.
+     * @param ativo O novo cargo do usuário.
+     */
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

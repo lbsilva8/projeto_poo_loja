@@ -26,9 +26,25 @@ public class ProdutoService {
      * Delega a operação de persistência para o repositório.
      *
      * @param p O objeto {@link Produto} a ser cadastrado.
+     * @throws IllegalArgumentException se um produto com o mesmo ID já estiver cadastrado.
      */
     public void cadastrarProduto(Produto p) {
-        repository.salvar(p);
+        try {
+            // 1. Tentamos buscar um produto com o mesmo ID.
+            Produto produtoExistente = buscarProduto(p.getId());
+
+            // 2. Se a linha acima NÃO lançou uma exceção, significa que o produto FOI encontrado.
+            //    Nesse caso, lançamos um erro, pois não podemos cadastrar um duplicado.
+            if (produtoExistente != null) {
+                throw new IllegalArgumentException("ERRO: O ID '" + p.getId() + "' já está cadastrado.");
+            }
+
+        } catch (ProdutoNaoEncontradoException e) {
+            // 3. Se buscarProduto lançou ProdutoNaoEncontradoException, é uma ÓTIMA notícia!
+            //    Significa que o ID está livre e podemos prosseguir com o cadastro.
+            System.out.println("LOG: ID '" + p.getId() + "' está disponível. Cadastrando novo produto.");
+            repository.salvar(p);
+        }
     }
 
     /**
@@ -115,6 +131,35 @@ public class ProdutoService {
             System.out.println("--> LOG: Estoque do produto '" + produto.getNome() + "' atualizado no Firebase.");
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException("ERRO: Falha ao atualizar o produto no banco de dados.", e);
+        }
+    }
+
+    /**
+     * Atualiza o preço de um produto específico.
+     * @param produtoId O ID do produto a ser atualizado.
+     * @param novoPreco O novo preço do produto.
+     * @throws ProdutoNaoEncontradoException se o produto não for encontrado.
+     * @throws IllegalArgumentException se o novo preço for negativo.
+     */
+    public void atualizarPrecoProduto(String produtoId, double novoPreco) throws ProdutoNaoEncontradoException {
+        // Validação da regra de negócio
+        if (novoPreco < 0) {
+            throw new IllegalArgumentException("O preço não pode ser negativo.");
+        }
+
+        // Busca o produto para garantir que ele existe
+        Produto produto = buscarProduto(produtoId);
+
+        // Altera o preço no objeto em memória
+        produto.setPreco(novoPreco);
+
+        // Persiste o objeto inteiro com os dados atualizados no banco.
+        // Nosso método genérico de atualizar no repositório já faz todo o trabalho.
+        try {
+            repository.atualizar(produto).get();
+            System.out.println("LOG: Preço do produto '" + produto.getNome() + "' atualizado no Firebase.");
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Falha ao atualizar o preço do produto no banco de dados.", e);
         }
     }
 }

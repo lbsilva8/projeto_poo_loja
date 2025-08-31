@@ -35,11 +35,11 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         // Carrega o arquivo FXML da tela principal
-        Parent root = FXMLLoader.load(getClass().getResource("/view/LoginView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/view/HomeView.fxml"));
 
         primaryStage.setTitle("Sistema de Vendas  - Login");
         primaryStage.setScene(new Scene(root));
-        primaryStage.setResizable(false);
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 

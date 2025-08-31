@@ -51,7 +51,7 @@ public class SistemaController {
         FirebaseConfig.initialize();
         System.out.println("Conexão estabelecida com sucesso!");
 
-        // setupUsuariosIniciais(); // Descomente para popular o banco na primeira execução.
+         setupUsuariosIniciais(); // Descomente para popular o banco na primeira execução.
 
         Usuario usuarioLogado = executarLoopDeLogin();
 
@@ -306,7 +306,9 @@ public class SistemaController {
     private void setupUsuariosIniciais() {
         System.out.println("Configurando usuários iniciais no Firebase...");
         Gerente gerenteAdmin = new Gerente(101, "Ana Gerente", "gerente", "admin");
+        gerenteAdmin.definirNovaSenha("admin");
         Atendente atendentePadrao = new Atendente(202, "Bruno Atendente", "atendente", "123");
+        atendentePadrao.definirNovaSenha("123");
         UsuarioRepository usuarioRepo = new repository.UsuarioRepository();
         usuarioRepo.salvar(gerenteAdmin);
         usuarioRepo.salvar(atendentePadrao);

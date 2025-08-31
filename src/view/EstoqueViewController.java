@@ -1,109 +1,141 @@
 package view;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import java.io.IOException;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.control.TextInputDialog;
+import java.util.Optional;
 
-import excecoes.ProdutoNaoEncontradoException;
+import model.Gerente;
 import model.Produto;
+import model.Usuario;
 import service.ProdutoService;
 
-
-/**
- * Classe para a tela de adição de estoque ({@code EstoqueView.fxml}).
- * Gerencia a interface do usuário e o fluxo de trabalho para o caso de uso de
- * adicionar quantidade ao estoque de um produto. Este processo envolve a seleção
- * de um produto através de uma janela de busca modal e, em seguida, a entrada
- * da quantidade a ser adicionada.
- *
- * @see BuscaProdutoViewController
- * @see ProdutoService
- */
 public class EstoqueViewController {
 
-    @FXML private Label infoProdutoLabel;
-    @FXML private TextField quantidadeAdicionalField;
-    @FXML private Button adicionarButton;
+    @FXML private TableView<Produto> tabelaProdutos;
+    @FXML private TableColumn<Produto, String> colunaId;
+    @FXML private TableColumn<Produto, String> colunaNome;
+    @FXML private TableColumn<Produto, Double> colunaPreco;
+    @FXML private TableColumn<Produto, Integer> colunaEstoque;
+    @FXML private HBox controlesGerenteHBox;
+    @FXML private TextField quantidadeField;
     @FXML private Label statusLabel;
 
+    private Usuario usuarioLogado;
     private final ProdutoService produtoService = new ProdutoService();
-    private Produto produtoSelecionado;
 
-    /**
-     * Manipula o clique no botão "Buscar Produto".
-     * Este metodo abre a janela de busca de produtos ({@code BuscaProdutoView}) como um
-     * pop-up modal. Ele aguarda o usuário selecionar um produto e fechar a janela.
-     * Após a seleção, ele busca os dados completos do produto, atualiza a interface
-     * e habilita os controles para a adição de estoque.
-     */
     @FXML
-    private void handleBuscarProduto() {
+    public void initialize() {
+        colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
+        colunaPreco.setCellValueFactory(new PropertyValueFactory<>("preco"));
+        colunaEstoque.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
+
+        carregarProdutos();
+    }
+
+    public void inicializarDados(Usuario usuario) {
+        this.usuarioLogado = usuario;
+
+        // AQUI ESTÁ A LÓGICA DE PERMISSÃO DA TELA!
+        if (usuarioLogado instanceof Gerente) {
+            // Se for Gerente, mostra os controles.
+            controlesGerenteHBox.setVisible(true);
+
+            // setManaged(true) diz ao layout para reservar espaço para os controles.
+            controlesGerenteHBox.setManaged(true);
+        } else {
+            // Se for Atendente, esconde os controles.
+            controlesGerenteHBox.setVisible(false);
+
+            // setManaged(false) diz ao layout para "fingir" que os controles não existem,
+            // fazendo com que o espaço que eles ocupavam desapareça.
+            controlesGerenteHBox.setManaged(false);
+        }
+    }
+
+    private void carregarProdutos() {
+        tabelaProdutos.setItems(FXCollections.observableArrayList(produtoService.buscarTodosProdutos()));
+    }
+
+    @FXML
+    private void handleAdicionar() {
+        editarEstoque(true);
+    }
+
+    @FXML
+    private void handleRemover() {
+        editarEstoque(false);
+    }
+
+    private void editarEstoque(boolean isAdicao) {
+        Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
+        if (produtoSelecionado == null) {
+            exibirAlerta("Selecione um produto na tabela primeiro.");
+            return;
+        }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/BuscaProdutoView.fxml"));
-            Parent root = loader.load();
-            BuscaProdutoViewController buscaController = loader.getController();
-
-            // Configura e exibe a janela como um modal (bloqueia a janela principal).
-            Stage buscaStage = new Stage();
-            buscaStage.setTitle("Buscar Produto");
-            buscaStage.setScene(new Scene(root));
-            buscaStage.initModality(Modality.APPLICATION_MODAL);
-            buscaStage.setResizable(false);
-            buscaStage.showAndWait();
-
-            // Após o fechamento da janela, recupera o resultado.
-            String idSelecionado = buscaController.getProdutoIdSelecionado();
-            if (idSelecionado != null) {
-                // Se um produto foi selecionado, busca os dados completos
-                produtoSelecionado = produtoService.buscarProduto(idSelecionado);
-                infoProdutoLabel.setText("Produto: " + produtoSelecionado.getNome() + " | Estoque Atual: " + produtoSelecionado.getQuantidade());
-
-                // Habilita os controles para adicionar estoque
-                quantidadeAdicionalField.setDisable(false);
-                adicionarButton.setDisable(false);
-                statusLabel.setText("");
+            int quantidade = Integer.parseInt(quantidadeField.getText());
+            if (isAdicao) {
+                produtoService.adicionarEstoque(produtoSelecionado.getId(), quantidade);
+                statusLabel.setText(quantidade + " unidades adicionadas ao estoque de " + produtoSelecionado.getNome());
+            } else {
+                produtoService.reduzirEstoque(produtoSelecionado.getId(), quantidade);
+                statusLabel.setText(quantidade + " unidades removidas do estoque de " + produtoSelecionado.getNome());
             }
-        } catch (IOException | ProdutoNaoEncontradoException e) {
-            e.printStackTrace();
-            statusLabel.setText("ERRO: Falha ao carregar ou buscar produto.");
+            quantidadeField.clear();
+            carregarProdutos(); // Atualiza a tabela com os novos valores
+        } catch (NumberFormatException e) {
+            exibirAlerta("A quantidade deve ser um número válido.");
+        } catch (Exception e) {
+            exibirAlerta(e.getMessage());
         }
     }
 
     /**
-     * Manipula o clique no botão "Adicionar Estoque".
-     * Pega a quantidade do campo de texto, chama o serviço de produto para executar
-     * a lógica de negócio e atualiza a interface com o resultado e o novo estoque.
+     * Chamado quando o botão "Atualizar Preço" é clicado.
+     * Abre um pop-up para que o gerente insira o novo preço.
      */
     @FXML
-    private void handleAdicionarEstoque() {
-        // Validação de estado: garante que um produto foi selecionado antes de prosseguir.
+    private void handleAtualizarPreco() {
+        Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
         if (produtoSelecionado == null) {
-            statusLabel.setText("ERRO: Nenhum produto selecionado.");
+            exibirAlerta("Selecione um produto na tabela primeiro.");
             return;
         }
 
-        try {
-            int quantidadeAdicional = Integer.parseInt(quantidadeAdicionalField.getText());
-            produtoService.adicionarEstoque(produtoSelecionado.getId(), quantidadeAdicional);
+        // Cria um pop-up de diálogo para entrada de texto.
+        TextInputDialog dialog = new TextInputDialog(String.valueOf(produtoSelecionado.getPreco()));
+        dialog.setTitle("Atualização de Preço");
+        dialog.setHeaderText("Atualizando preço para: " + produtoSelecionado.getNome());
+        dialog.setContentText("Digite o novo preço (R$):");
 
-            statusLabel.setText("Estoque adicionado com sucesso!");
-            quantidadeAdicionalField.clear();
+        // Mostra o diálogo e aguarda a entrada do usuário.
+        Optional<String> result = dialog.showAndWait();
 
-            // Atualiza as informações do produto selecionado na tela
-            produtoSelecionado = produtoService.buscarProduto(produtoSelecionado.getId());
-            infoProdutoLabel.setText("Produto: " + produtoSelecionado.getNome() + " | Estoque Atual: " + produtoSelecionado.getQuantidade());
+        // Se o usuário clicou em OK, o resultado estará presente.
+        result.ifPresent(novoPrecoStr -> {
+            try {
+                double novoPreco = Double.parseDouble(novoPrecoStr);
+                produtoService.atualizarPrecoProduto(produtoSelecionado.getId(), novoPreco);
+                statusLabel.setText("Preço de " + produtoSelecionado.getNome() + " atualizado com sucesso.");
+                carregarProdutos();
+            } catch (NumberFormatException e) {
+                exibirAlerta("O preço deve ser um número válido.");
+            } catch (Exception e) {
+                exibirAlerta(e.getMessage());
+            }
+        });
+    }
 
-        } catch (NumberFormatException e) {
-            statusLabel.setText("ERRO: A quantidade deve ser um número.");
-        } catch (IllegalArgumentException | ProdutoNaoEncontradoException e) {
-            statusLabel.setText("ERRO: " + e.getMessage());
-        }
+    private void exibirAlerta(String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Aviso");
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
     }
 }
