@@ -19,7 +19,7 @@ Este projeto foi estruturado para demonstrar a aplicação prática de diversos 
 -   **Tratamento de Exceções:** Criação de exceções de negócio personalizadas (ex: `ProdutoNaoEncontradoException`, `AcessoNegadoException`) para um controle de erros claro e específico.
 
 -   **Padrões de Design (Design Patterns):**
-    -   **MVC (Model-View-Controller):** A arquitetura foi refatorada para separar as responsabilidades, com o `SistemaController` gerenciando o fluxo da aplicação.
+    -   **MVC (Model-view-Controller):** A arquitetura foi refatorada para separar as responsabilidades, com o `SistemaController` gerenciando o fluxo da aplicação.
     -   **Repository:** A camada `repository` abstrai a complexidade do acesso ao banco de dados, desacoplando a lógica de negócio da tecnologia de persistência.
     -   **DTO (Data Transfer Object):** O uso de `VendaDTO` para desacoplar o modelo de domínio do modelo de persistência.
     -   **Dependency Injection:** A injeção de dependências no `VendaService` e no `SistemaController` para aumentar a flexibilidade e testabilidade.

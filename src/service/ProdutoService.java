@@ -5,6 +5,8 @@ import excecoes.*;
 import repository.ProdutoRepository;
 
 import java.util.concurrent.ExecutionException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Classe de serviço responsável por encapsular as regras de negócio e a orquestração
@@ -49,6 +51,18 @@ public class ProdutoService {
             return p;
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException("ERRO: Erro ao buscar produto no banco de dados.", e);
+        }
+    }
+
+    /**
+     * Retorna uma lista com todos os produtos do banco de dados.
+     * @return Uma Lista de Produtos.
+     */
+    public List<Produto> buscarTodosProdutos() {
+        try {
+            return repository.buscarTodos().get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("ERRO: Erro ao buscar todos os produtos.", e);
         }
     }
 

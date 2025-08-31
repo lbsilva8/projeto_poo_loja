@@ -11,6 +11,8 @@ import model.Produto;
 import interfaces.ICrud;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementação concreta do padrão Repository para a entidade {@link Produto}.
@@ -99,6 +101,32 @@ public class ProdutoRepository implements ICrud<Produto> {
             }
         });
 
+        return future;
+    }
+
+    /**
+     * Busca todos os produtos cadastrados no banco de dados.
+     * @return Um CompletableFuture que será completado com uma Lista de Produtos.
+     */
+    public CompletableFuture<List<Produto>> buscarTodos() {
+        CompletableFuture<List<Produto>> future = new CompletableFuture<>();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Produto> produtos = new ArrayList<>();
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        produtos.add(snapshot.getValue(Produto.class));
+                    }
+                }
+                future.complete(produtos);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                future.completeExceptionally(databaseError.toException());
+            }
+        });
         return future;
     }
 }
