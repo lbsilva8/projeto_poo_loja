@@ -1,5 +1,12 @@
 package model;
 
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import java.time.LocalDateTime;
 
 /**

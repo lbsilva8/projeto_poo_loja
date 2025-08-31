@@ -1,6 +1,13 @@
 package model;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+/**
  * Representa um Objeto de Transferência de Dados (DTO) para a entidade {@link Venda}.
  * Esta classe é projetada especificamente para a camada de persistência. Ela contém
  * uma representação  um objeto {@link Venda}, onde as
@@ -33,7 +40,7 @@ public class VendaDTO {
         this.quantidade = venda.getQuantidade();
         this.dataHora = venda.getDataHora();
         this.formaPagamento = venda.getFormaPagamento().name();
-        this.valorTotal = venda.getValorTotal(); // <-- Pegamos o valor já calculado
+        this.valorTotal = venda.getValorTotal();
     }
 
     /**

@@ -1,6 +1,13 @@
 package interfaces;
-import com.google.api.core.ApiFuture;
 
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+import com.google.api.core.ApiFuture;
 import java.util.concurrent.CompletableFuture;
 
 /**

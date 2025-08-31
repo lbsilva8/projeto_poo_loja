@@ -1,6 +1,13 @@
 package model;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+/**
  * Representa um conjunto fixo de constantes para as formas de pagamento aceitas pelo sistema.
  * O uso de um Enum para esta finalidade garante a segurança de tipos (type safety),
  * evitando o uso de "magic strings" e prevenindo erros de digitação ao longo do código.

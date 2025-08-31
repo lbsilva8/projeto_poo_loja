@@ -1,11 +1,28 @@
-package view;
+package controller;
+
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+
 import model.Produto;
 import service.ProdutoService;
 
+/**
+ * Classe para a view de cadastro de novos produtos ({@code ProdutoCadastroView.fxml}).
+ * Esta classe gerencia o formulário de entrada de dados para um novo produto,
+ * realizando validações básicas e delegando a lógica de negócio de persistência
+ * para o {@link ProdutoService}.
+ *
+ * @see controller.MainViewController
+ * @see service.ProdutoService
+ */
 public class ProdutoCadastroViewController {
 
     @FXML private TextField idField;
@@ -17,6 +34,12 @@ public class ProdutoCadastroViewController {
 
     private final ProdutoService produtoService = new ProdutoService();
 
+    /**
+     * Processa o evento de clique do botão "Cadastrar Produto".
+     * Coleta os dados dos campos do formulário, realiza validações de entrada,
+     * cria um novo objeto {@link Produto} e invoca o serviço para salvá-lo.
+     * Fornece feedback ao usuário através de um label de status.
+     */
     @FXML
     private void handleCadastrar() {
         try {
@@ -49,6 +72,10 @@ public class ProdutoCadastroViewController {
         }
     }
 
+    /**
+     * Metodo auxiliar para limpar todos os campos do formulário após um
+     * cadastro bem-sucedido, preparando a tela para uma nova entrada.
+     */
     private void limparCampos() {
         idField.clear();
         nomeField.clear();

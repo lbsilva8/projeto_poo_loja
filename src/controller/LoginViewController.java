@@ -1,15 +1,33 @@
-package view;
+package controller;
 
-import excecoes.AutenticacaoException;
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import excecoes.AutenticacaoException;
 import model.Usuario;
 import service.UsuarioService;
 
+/**
+ * Classe para a view de login modal ({@code LoginView.fxml}).
+ * Esta classe gerencia a janela pop-up de login. Sua responsabilidade é capturar as
+ * credenciais do usuário, invocar o {@link UsuarioService} para a validação e,
+ * em caso de sucesso, armazenar o objeto {@link Usuario} autenticado para que a
+ * tela principal possa recuperá-lo.
+ *
+ * @see HomeViewController
+ * @see service.UsuarioService
+ */
 public class LoginViewController {
 
     @FXML private TextField usuarioField;
@@ -20,6 +38,12 @@ public class LoginViewController {
     private final UsuarioService usuarioService = new UsuarioService();
     private Usuario usuarioAutenticado = null;
 
+    /**
+     * Processa o evento de clique do botão "Entrar".
+     * Coleta as credenciais da interface, chama o serviço de autenticação e, se
+     * o login for bem-sucedido, armazena o resultado e fecha a janela. Se ocorrer
+     * uma falha, exibe uma mensagem de erro para o usuário.
+     */
     @FXML
     private void handleLogin() {
         String usuario = usuarioField.getText();
@@ -31,10 +55,7 @@ public class LoginViewController {
         }
 
         try {
-            // A linha mais importante: vamos ver o que o serviço retorna.
             Usuario resultadoDaAutenticacao = usuarioService.autenticar(usuario, senha);
-
-
             this.usuarioAutenticado = resultadoDaAutenticacao;
 
             Stage stage = (Stage) loginButton.getScene().getWindow();
@@ -50,6 +71,15 @@ public class LoginViewController {
         }
     }
 
+    /**
+     * Permite que a classe que invocou esta janela recupere o resultado da autenticação.
+     * <p>
+     * Este metodo deve ser chamado pelo controller pai (ex: {@link HomeViewController})
+     * <strong>após</strong> a janela de login ter sido fechada.
+     *
+     * @return O objeto {@link Usuario} autenticado em caso de sucesso, ou {@code null}
+     * se a autenticação falhou ou a janela foi fechada.
+     */
     public Usuario getUsuarioAutenticado() {
         return usuarioAutenticado;
     }

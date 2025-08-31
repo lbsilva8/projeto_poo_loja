@@ -1,6 +1,15 @@
 package model;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+import java.util.Map;
+
+/**
  * Representa um usuário concreto do tipo Gerente no sistema.
  * Esta classe, uma especialização de {@link Usuario}, é usada para modelar um
  * usuário com privilégios administrativos. O sistema utiliza o tipo desta classe
@@ -26,6 +35,7 @@ public class Gerente extends Usuario {
      */
     public Gerente(int matricula, String nome, String usuario, String senha) {
         super(matricula, nome, usuario, senha, "GERENTE");
+        darPermissoesDeGerente();
     }
 
     /**
@@ -38,5 +48,16 @@ public class Gerente extends Usuario {
     public Gerente() {
         super();
         setCargo("GERENTE");
+        darPermissoesDeGerente();
+    }
+
+    /**
+     * Metodo privado que sobrescreve as permissões padrão, concedendo acesso total.
+     */
+    private void darPermissoesDeGerente() {
+        Map<String, Boolean> permissoes = getPermissoes();
+        for (Permissao p : Permissao.values()) {
+            permissoes.put(p.name(), true);
+        }
     }
 }

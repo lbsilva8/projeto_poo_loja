@@ -1,6 +1,13 @@
 package model;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+/**
  * Representa um usuário concreto do tipo Atendente no sistema.
  * Esta classe é uma especialização da classe abstrata {@link Usuario}. Seu principal
  * propósito é modelar um papel (role) com um conjunto de permissões específico.

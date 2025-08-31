@@ -1,5 +1,12 @@
 package repository;
 
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import com.google.firebase.database.*;
 import database.FirebaseConfig;
 
@@ -122,7 +129,6 @@ public class UsuarioRepository {
                 List<Usuario> usuarios = new ArrayList<>();
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        // Reutiliza a lógica de descobrir o cargo para criar o objeto correto
                         String cargo = snapshot.child("cargo").getValue(String.class);
                         Usuario usuario = "GERENTE".equals(cargo)
                                 ? snapshot.getValue(Gerente.class)

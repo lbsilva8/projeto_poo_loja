@@ -1,9 +1,16 @@
 package model;
+
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import excecoes.*;
 
 /**
  * Representa um produto no inventário da loja.
- * <p>
  * Esta classe encapsula todos os dados pertinentes a um produto, como seu identificador,
  * nome, preço e quantidade em estoque. Além de armazenar o estado do produto, ela também
  * contém lógicas de negócio essenciais, como a validação para redução de estoque.

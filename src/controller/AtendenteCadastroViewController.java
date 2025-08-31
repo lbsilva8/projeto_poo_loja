@@ -1,14 +1,31 @@
-package view;
+package controller;
 
-import excecoes.AcessoNegadoException;
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import excecoes.AcessoNegadoException;
 import model.Atendente;
 import model.Usuario;
 import service.UsuarioService;
 
+/**
+ * Classe controladora para a view de cadastro de novos atendentes ({@code AtendenteCadastroView.fxml}).
+ * Este controller gerencia o formulário de cadastro, validando as entradas e delegando
+ * a criação do novo atendente para o {@link UsuarioService}. A permissão para
+ * executar esta ação é validada na camada de serviço.
+ *
+ * @see MainViewController
+ * @see service.UsuarioService
+ */
 public class AtendenteCadastroViewController {
 
     @FXML private TextField matriculaField;
@@ -21,12 +38,19 @@ public class AtendenteCadastroViewController {
     private final UsuarioService usuarioService = new UsuarioService();
 
     /**
-     * Recebe o gerente logado da tela principal para validar a permissão.
+     * Recebe o usuário gerente logado da tela principal. Este objeto é necessário
+     * para a camada de serviço realizar a verificação de permissão.
      */
     public void inicializarDados(Usuario gerente) {
         this.gerenteLogado = gerente;
     }
 
+    /**
+     * Processa o evento de clique do botão "Cadastrar Atendente".
+     * Coleta os dados do formulário, realiza validações, cria um novo objeto
+     * {@link Atendente}, define sua senha de forma criptografada e invoca o
+     * serviço para salvá-lo. Fornece feedback ao usuário através de um label de status.
+     */
     @FXML
     private void handleCadastrar() {
         try {
@@ -57,6 +81,9 @@ public class AtendenteCadastroViewController {
         }
     }
 
+    /**
+     * Metodo auxiliar para limpar os campos do formulário após um cadastro bem-sucedido.
+     */
     private void limparCampos() {
         matriculaField.clear();
         nomeField.clear();

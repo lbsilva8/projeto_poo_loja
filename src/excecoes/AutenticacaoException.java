@@ -1,12 +1,19 @@
 package excecoes;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+/**
  * Exceção personalizada utilizada para sinalizar uma falha no processo de autenticação de um usuário.
  * Esta exceção é lançada quando as credenciais fornecidas (como nome de usuário e senha)
  * não correspondem aos registros do sistema, impedindo o login.
  *
  * @see java.lang.Exception
- * @see model.Usuario#autenticar(String, String)
+ * @see model.Usuario#autenticar(String) 
  * @see service.UsuarioService#autenticar(String, String)
  * @see AcessoNegadoException
  */

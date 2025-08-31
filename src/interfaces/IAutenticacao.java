@@ -1,6 +1,13 @@
 package interfaces;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+/**
  * Define um contrato para todas as classes cujos objetos podem ser autenticados no sistema.
  * Uma classe que implementa esta interface garante que possui a lógica necessária para
  * validar um par de credenciais (usuário e senha).

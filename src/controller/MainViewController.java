@@ -1,4 +1,11 @@
-package view;
+package controller;
+
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,15 +16,16 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import java.io.IOException;
 
-import model.Gerente;
+
+import model.Permissao;
 import model.Usuario;
 
 /**
  * Classe para a tela principal da aplicação ({@code MainView.fxml}).
  * Esta classe atua como o painel de controle principal após a autenticação do usuário.
  * Suas responsabilidades incluem:
- * Configurar a interface com base nas permissões do usuário logado (Gerente ou Atendente).
- * Atuar como um navegador, carregando diferentes "mini-telas" (views) na área de conteúdo central.
+ * Configurar a interface com base nas permissões do usuário logado.
+ * Atuar como um navegador, carregando diferentes (views) na área de conteúdo central.
  * Passar o contexto do usuário logado para as sub-views que são carregadas.
  *
  * @see LoginViewController
@@ -40,6 +48,9 @@ public class MainViewController {
     private Button gerenciarAtendentesButton;
     @FXML
     private VBox centerPane;
+    @FXML
+    private Button gerenciarPermissoesButton;
+
 
     private Usuario usuarioLogado;
 
@@ -47,7 +58,7 @@ public class MainViewController {
      * Metodo de inicialização que recebe o usuário autenticado da tela de login.
      * Este é o ponto de entrada de dados para este controller. Ele armazena o estado
      * do usuário e personaliza a visibilidade dos componentes da interface com base
-     * no cargo (role) do usuário, implementando o controle de autorização na view.
+     * nos acessos, implementando o controle de autorização na view.
      *
      * @param usuario O usuário que acabou de ser autenticado.
      */
@@ -55,20 +66,23 @@ public class MainViewController {
         this.usuarioLogado = usuario;
         welcomeLabel.setText("Bem-vindo(a), " + usuarioLogado.getNome() + "!");
 
-        // Regra de autorização da View: esconde botões se o usuário não for Gerente.
-        if (usuarioLogado instanceof Gerente) {
-            // Se for Gerente, GARANTE que os botões estão visíveis.
-            cadastrarProdutoButton.setVisible(true);
-            cadastrarAtendenteButton.setVisible(true);
-            gerenciarAtendentesButton.setVisible(true);
-            gerenciarEstoqueButton.setText("Gerenciar Estoque"); // Texto completo para o gerente
-        } else {
-            // Se for Atendente, GARANTE que os botões estão escondidos.
-            cadastrarProdutoButton.setVisible(false);
-            cadastrarAtendenteButton.setVisible(false);
-            gerenciarAtendentesButton.setVisible(false);
-            gerenciarEstoqueButton.setText("Visualizar Estoque"); // Texto diferente para o atendente
-        }
+        cadastrarProdutoButton.setVisible(usuarioLogado.temPermissao(Permissao.CADASTRAR_PRODUTO));
+        cadastrarAtendenteButton.setVisible(usuarioLogado.temPermissao(Permissao.GERENCIAR_USUARIOS));
+        gerenciarAtendentesButton.setVisible(usuarioLogado.temPermissao(Permissao.GERENCIAR_USUARIOS));
+        gerenciarPermissoesButton.setVisible(usuarioLogado.temPermissao(Permissao.GERENCIAR_USUARIOS));
+
+        gerenciarEstoqueButton.setText(
+                usuarioLogado.temPermissao(Permissao.GERENCIAR_ESTOQUE) ? "Gerenciar Estoque" : "Visualizar Estoque"
+        );
+    }
+
+    /**
+     * Processa o clique no botão "Gerenciar Permissões", carregando a view correspondente.
+     * @param event O evento de ação do clique.
+     */
+    @FXML
+    private void handleGerenciarPermissoes(ActionEvent event) {
+        carregarView("/view/GerenciarPermissoesView.fxml");
     }
 
     /**
@@ -89,11 +103,19 @@ public class MainViewController {
         carregarView("/view/EstoqueView.fxml");
     }
 
+    /**
+     * Processa o clique no botão "Cadastrar Atendente", carregando a view correspondente.
+     * @param event O evento de ação do clique.
+     */
     @FXML
     private void handleCadastrarAtendente(ActionEvent event) {
         carregarView("/view/AtendenteCadastroView.fxml");
     }
 
+    /**
+     * Processa o clique no botão "Gerenciar Atendentes", carregando a view correspondente.
+     * @param event O evento de ação do clique.
+     */
     @FXML
     private void handleGerenciarAtendentes(ActionEvent event) {
         carregarView("/view/GerenciarAtendentesView.fxml");
@@ -130,6 +152,9 @@ public class MainViewController {
                 ((GerenciarAtendentesViewController) controller).inicializarDados(this.usuarioLogado);
             } else if (controller instanceof EstoqueViewController) {
                 ((EstoqueViewController) controller).inicializarDados(this.usuarioLogado);
+            }
+            else if (controller instanceof GerenciarPermissoesViewController) {
+                ((GerenciarPermissoesViewController) controller).inicializarDados(this.usuarioLogado);
             }
 
             centerPane.getChildren().setAll(view);

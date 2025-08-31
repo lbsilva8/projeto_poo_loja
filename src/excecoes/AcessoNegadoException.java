@@ -1,6 +1,13 @@
 package excecoes;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+/**
  * Exceção personalizada utilizada para sinalizar uma falha de autorização no sistema.
  * Esta exceção é lançada quando um usuário tenta executar uma ação ou acessar um recurso
  * para o qual não possui o nível de permissão necessário. Por exemplo, quando um

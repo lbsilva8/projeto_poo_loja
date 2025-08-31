@@ -1,4 +1,11 @@
-package view;
+package controller;
+
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -39,13 +46,11 @@ public class BuscaProdutoViewController {
      */
     @FXML
     public void initialize() {
-        // Configura as colunas para buscar os valores dos atributos da classe Produto
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colunaPreco.setCellValueFactory(new PropertyValueFactory<>("preco"));
         colunaEstoque.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
 
-        // Carrega os produtos na tabela
         List<Produto> todosProdutos = produtoService.buscarTodosProdutos();
         tabelaProdutos.setItems(FXCollections.observableArrayList(todosProdutos));
     }
@@ -60,7 +65,6 @@ public class BuscaProdutoViewController {
         Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
         if (produtoSelecionado != null) {
             this.produtoIdSelecionado = produtoSelecionado.getId();
-            // Fecha a janela (pop-up)
             Stage stage = (Stage) tabelaProdutos.getScene().getWindow();
             stage.close();
         }

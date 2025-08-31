@@ -1,5 +1,12 @@
 package controller;
 
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import database.FirebaseConfig;
 import excecoes.*;
 import model.*;
@@ -23,6 +30,7 @@ import java.util.Scanner;
  * @see service.UsuarioService
  * @see service.ProdutoService
  * @see service.VendaService
+ * @see model.Permissao
  */
 public class SistemaController {
 
@@ -51,7 +59,7 @@ public class SistemaController {
         FirebaseConfig.initialize();
         System.out.println("Conexão estabelecida com sucesso!");
 
-         setupUsuariosIniciais(); // Descomente para popular o banco na primeira execução.
+         //setupUsuariosIniciais(); // Descomente para popular o banco na primeira execução.
 
         Usuario usuarioLogado = executarLoopDeLogin();
 
@@ -103,10 +111,29 @@ public class SistemaController {
                 int opcao = scanner.nextInt();
                 scanner.nextLine();
 
-                if (usuarioLogado instanceof Gerente) {
-                    executando = processarOpcaoGerente(opcao, usuarioLogado);
-                } else {
-                    executando = processarOpcaoAtendente(opcao, usuarioLogado);
+                switch (opcao) {
+                    case 1:
+                        if (usuarioLogado.temPermissao(Permissao.REALIZAR_VENDA)) realizarVenda(usuarioLogado);
+                        else System.err.println("Acesso Negado.");
+                        break;
+                    case 2:
+                        if (usuarioLogado.temPermissao(Permissao.CADASTRAR_PRODUTO)) cadastrarProduto();
+                        else System.err.println("Acesso Negado.");
+                        break;
+                    case 3:
+                        if (usuarioLogado.temPermissao(Permissao.GERENCIAR_USUARIOS))
+                            cadastrarNovoAtendente(usuarioLogado);
+                        else System.err.println("Acesso Negado.");
+                        break;
+                    case 4:
+                        if (usuarioLogado.temPermissao(Permissao.GERENCIAR_ESTOQUE)) adicionarEstoqueProduto();
+                        else System.err.println("Acesso Negado.");
+                        break;
+                    case 0:
+                        executando = false;
+                        break;
+                    default:
+                        System.err.println("Opção inválida. Tente novamente.");
                 }
             } catch (InputMismatchException e) {
                 System.err.println("Erro: Por favor, digite um número válido para a opção.");
@@ -116,17 +143,23 @@ public class SistemaController {
     }
 
     /**
-     * Exibe o menu de opções apropriado com base no cargo do usuário.
+     * Exibe o menu de opções apropriado com base nas permissões do usuário..
      *
      * @param usuario O usuário atualmente logado.
      */
     private void exibirMenu(Usuario usuario) {
         System.out.println("\n--- MENU PRINCIPAL ---");
-        System.out.println("1. Realizar Venda");
-        if (usuario instanceof Gerente) {
+        if (usuario.temPermissao(Permissao.REALIZAR_VENDA)) {
+            System.out.println("1. Realizar Venda");
+        }
+        if (usuario.temPermissao(Permissao.CADASTRAR_PRODUTO)) {
             System.out.println("2. Cadastrar Produto");
+        }
+        if (usuario.temPermissao(Permissao.GERENCIAR_USUARIOS)) {
             System.out.println("3. Cadastrar Novo Atendente");
-            System.out.println("4. Adicionar Estoque de Produto");
+        }
+        if (usuario.temPermissao(Permissao.GERENCIAR_ESTOQUE)) {
+            System.out.println("4. Gerenciar Estoque");
         }
         System.out.println("0. Sair do Sistema");
         System.out.print("Escolha uma opção: ");

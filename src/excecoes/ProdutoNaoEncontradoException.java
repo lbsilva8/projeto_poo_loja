@@ -1,5 +1,12 @@
 package excecoes;
 
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import model.FormaPagamento;
 import model.Usuario;
 

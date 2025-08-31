@@ -1,12 +1,18 @@
 package service;
 
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
 import model.Produto;
 import excecoes.*;
 import repository.ProdutoRepository;
 
 import java.util.concurrent.ExecutionException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Classe de serviço responsável por encapsular as regras de negócio e a orquestração
@@ -30,18 +36,13 @@ public class ProdutoService {
      */
     public void cadastrarProduto(Produto p) {
         try {
-            // 1. Tentamos buscar um produto com o mesmo ID.
             Produto produtoExistente = buscarProduto(p.getId());
 
-            // 2. Se a linha acima NÃO lançou uma exceção, significa que o produto FOI encontrado.
-            //    Nesse caso, lançamos um erro, pois não podemos cadastrar um duplicado.
             if (produtoExistente != null) {
                 throw new IllegalArgumentException("ERRO: O ID '" + p.getId() + "' já está cadastrado.");
             }
 
         } catch (ProdutoNaoEncontradoException e) {
-            // 3. Se buscarProduto lançou ProdutoNaoEncontradoException, é uma ÓTIMA notícia!
-            //    Significa que o ID está livre e podemos prosseguir com o cadastro.
             System.out.println("LOG: ID '" + p.getId() + "' está disponível. Cadastrando novo produto.");
             repository.salvar(p);
         }
@@ -142,19 +143,13 @@ public class ProdutoService {
      * @throws IllegalArgumentException se o novo preço for negativo.
      */
     public void atualizarPrecoProduto(String produtoId, double novoPreco) throws ProdutoNaoEncontradoException {
-        // Validação da regra de negócio
         if (novoPreco < 0) {
             throw new IllegalArgumentException("O preço não pode ser negativo.");
         }
 
-        // Busca o produto para garantir que ele existe
         Produto produto = buscarProduto(produtoId);
-
-        // Altera o preço no objeto em memória
         produto.setPreco(novoPreco);
 
-        // Persiste o objeto inteiro com os dados atualizados no banco.
-        // Nosso método genérico de atualizar no repositório já faz todo o trabalho.
         try {
             repository.atualizar(produto).get();
             System.out.println("LOG: Preço do produto '" + produto.getNome() + "' atualizado no Firebase.");

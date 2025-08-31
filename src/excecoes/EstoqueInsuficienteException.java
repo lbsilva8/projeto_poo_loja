@@ -1,6 +1,13 @@
 package excecoes;
 
 /**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+/**
  * Exceção personalizada para sinalizar uma falha de regra de negócio quando uma
  * operação tenta consumir mais itens de um produto do que o disponível em estoque.
  * Esta exceção é tipicamente lançada durante o registro de uma venda ou qualquer

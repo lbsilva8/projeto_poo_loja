@@ -7,19 +7,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainViewController">
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainViewController">
     <left>
         <VBox prefWidth="200.0" spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-border-color: #cccccc;" BorderPane.alignment="CENTER">
             <children>
                 <Label text="Menu">
                     <font><Font name="System Bold" size="16.0" /></font>
                 </Label>
-
                 <Button fx:id="realizarVendaButton" onAction="#handleRealizarVenda" maxWidth="1.7976931348623157E308" text="Realizar Venda" />
-                <Button fx:id="gerenciarEstoqueButton" onAction="#handleGerenciarEstoque" maxWidth="1.7976931348623157E308" text="Gerenciar Estoque" />
                 <Button fx:id="cadastrarProdutoButton" onAction="#handleCadastrarProduto" maxWidth="1.7976931348623157E308" text="Cadastrar Produto" />
+                <Button fx:id="gerenciarEstoqueButton" onAction="#handleGerenciarEstoque" maxWidth="1.7976931348623157E308" text="Gerenciar Estoque" />
                 <Button fx:id="cadastrarAtendenteButton" onAction="#handleCadastrarAtendente" maxWidth="1.7976931348623157E308" text="Cadastrar Atendente" />
-                <Button fx:id="gerenciarAtendentesButton" onAction="#handleGerenciarAtendentes" maxWidth="1.7976931348623157E308" text="Gerenciar Atendentes" />
+                <Button fx:id="gerenciarAtendentesButton" onAction="#handleGerenciarAtendentes" maxWidth="1.7976931348623157E308" text="Ativar/Inativar Atendentes" />
+                <Button fx:id="gerenciarPermissoesButton" onAction="#handleGerenciarPermissoes" maxWidth="1.7976931348623157E308" text="Gerenciar Permissões" />
             </children>
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

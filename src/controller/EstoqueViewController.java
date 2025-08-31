@@ -1,4 +1,11 @@
-package view;
+package controller;
+
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -8,11 +15,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.control.TextInputDialog;
 import java.util.Optional;
 
-import model.Gerente;
+import model.Permissao;
 import model.Produto;
 import model.Usuario;
 import service.ProdutoService;
 
+/**
+ * Classe para a view de gerenciamento de estoque ({@code GerenciarEstoqueView.fxml}).
+ * Esta classe exibe todos os produtos em uma tabela e ajusta a interface com base
+ * nas permissões do usuário logado. Para Atendentes, funciona como uma tela de
+ * visualização. Para Gerentes, habilita controles para adicionar/remover
+ * estoque e atualizar preços.
+ *
+ * @see MainViewController
+ * @see service.ProdutoService
+ */
 public class EstoqueViewController {
 
     @FXML private TableView<Produto> tabelaProdutos;
@@ -27,6 +44,10 @@ public class EstoqueViewController {
     private Usuario usuarioLogado;
     private final ProdutoService produtoService = new ProdutoService();
 
+    /**
+     * Metodo de inicialização do JavaFX. Configura as colunas da tabela
+     * para se vincularem aos atributos da classe {@link Produto} e carrega os dados.
+     */
     @FXML
     public void initialize() {
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -37,40 +58,41 @@ public class EstoqueViewController {
         carregarProdutos();
     }
 
+    /**
+     * Recebe o usuário logado e ajusta a visibilidade dos controles de edição
+     * com base na permissão {@link Permissao#GERENCIAR_ESTOQUE}.
+     */
     public void inicializarDados(Usuario usuario) {
         this.usuarioLogado = usuario;
+        boolean podeGerenciar = usuarioLogado.temPermissao(Permissao.GERENCIAR_ESTOQUE);
 
-        // AQUI ESTÁ A LÓGICA DE PERMISSÃO DA TELA!
-        if (usuarioLogado instanceof Gerente) {
-            // Se for Gerente, mostra os controles.
-            controlesGerenteHBox.setVisible(true);
-
-            // setManaged(true) diz ao layout para reservar espaço para os controles.
-            controlesGerenteHBox.setManaged(true);
-        } else {
-            // Se for Atendente, esconde os controles.
-            controlesGerenteHBox.setVisible(false);
-
-            // setManaged(false) diz ao layout para "fingir" que os controles não existem,
-            // fazendo com que o espaço que eles ocupavam desapareça.
-            controlesGerenteHBox.setManaged(false);
-        }
+        controlesGerenteHBox.setVisible(podeGerenciar);
+        controlesGerenteHBox.setManaged(podeGerenciar);
     }
 
+    /**
+     * Busca os dados mais recentes dos produtos e atualiza a tabela.
+     */
     private void carregarProdutos() {
         tabelaProdutos.setItems(FXCollections.observableArrayList(produtoService.buscarTodosProdutos()));
     }
 
+    /** Processa o clique no botão "Adicionar". */
     @FXML
     private void handleAdicionar() {
         editarEstoque(true);
     }
 
+    /** Processa o clique no botão "Remover". */
     @FXML
     private void handleRemover() {
         editarEstoque(false);
     }
 
+    /**
+     * Lógica central para adicionar ou remover estoque de um produto selecionado.
+     * @param isAdicao {@code true} para adicionar, {@code false} para remover.
+     */
     private void editarEstoque(boolean isAdicao) {
         Produto produtoSelecionado = tabelaProdutos.getSelectionModel().getSelectedItem();
         if (produtoSelecionado == null) {
@@ -87,7 +109,7 @@ public class EstoqueViewController {
                 statusLabel.setText(quantidade + " unidades removidas do estoque de " + produtoSelecionado.getNome());
             }
             quantidadeField.clear();
-            carregarProdutos(); // Atualiza a tabela com os novos valores
+            carregarProdutos();
         } catch (NumberFormatException e) {
             exibirAlerta("A quantidade deve ser um número válido.");
         } catch (Exception e) {
@@ -107,16 +129,12 @@ public class EstoqueViewController {
             return;
         }
 
-        // Cria um pop-up de diálogo para entrada de texto.
         TextInputDialog dialog = new TextInputDialog(String.valueOf(produtoSelecionado.getPreco()));
         dialog.setTitle("Atualização de Preço");
         dialog.setHeaderText("Atualizando preço para: " + produtoSelecionado.getNome());
         dialog.setContentText("Digite o novo preço (R$):");
-
-        // Mostra o diálogo e aguarda a entrada do usuário.
         Optional<String> result = dialog.showAndWait();
 
-        // Se o usuário clicou em OK, o resultado estará presente.
         result.ifPresent(novoPrecoStr -> {
             try {
                 double novoPreco = Double.parseDouble(novoPrecoStr);
@@ -131,6 +149,10 @@ public class EstoqueViewController {
         });
     }
 
+    /**
+     * Metodo auxiliar para exibir uma janela de alerta padrão.
+     * @param mensagem A mensagem a ser exibida.
+     */
     private void exibirAlerta(String mensagem) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Aviso");

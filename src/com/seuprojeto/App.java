@@ -1,5 +1,13 @@
 package com.seuprojeto;
 
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
+
+import controller.LoginViewController;
 import database.FirebaseConfig;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +25,7 @@ import java.io.IOException;
  * e o carregamento e exibição da primeira tela da interface do usuário (a tela de login).
  *
  * @see javafx.application.Application
- * @see view.LoginViewController
+ * @see LoginViewController
  */
 public class App extends Application {
 

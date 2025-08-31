@@ -1,7 +1,11 @@
-package view;
+package controller;
 
-import excecoes.EstoqueInsuficienteException;
-import excecoes.ProdutoNaoEncontradoException;
+/**
+ * Autoras:
+ * Andreísy Neves Ferreira
+ * Isabella Paranhos Meireles
+ * Lorena da Silva Borges
+ */
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -20,6 +24,8 @@ import model.Usuario;
 import repository.VendaRepository;
 import service.ProdutoService;
 import service.VendaService;
+import excecoes.EstoqueInsuficienteException;
+import excecoes.ProdutoNaoEncontradoException;
 
 /**
  * Classe para a tela de registro de vendas ({@code VendaView.fxml}).
@@ -50,7 +56,6 @@ public class VendaViewController {
      */
     @FXML
     public void initialize() {
-        // Preenche o ComboBox com as opções do Enum FormaPagamento
         formaPagamentoBox.getItems().setAll(FormaPagamento.values());
         formaPagamentoBox.getSelectionModel().selectFirst();
     }
@@ -79,20 +84,16 @@ public class VendaViewController {
 
             BuscaProdutoViewController buscaController = loader.getController();
 
-            // Cria e configura a nova janela (Stage) como um pop-up modal
             Stage buscaStage = new Stage();
             buscaStage.setTitle("Buscar Produto");
             buscaStage.setScene(new Scene(root));
             buscaStage.initModality(Modality.APPLICATION_MODAL);
             buscaStage.setResizable(false);
 
-            //Mostra a janela e ESPERA até que ela seja fechada
             buscaStage.showAndWait();
 
-            //Após fechar, pega o resultado do controller da busca
             String idSelecionado = buscaController.getProdutoIdSelecionado();
             if (idSelecionado != null) {
-                //Coloca o ID selecionado no campo de texto da tela de vendas
                 produtoIdField.setText(idSelecionado);
             }
 
@@ -132,7 +133,7 @@ public class VendaViewController {
     }
 
     /**
-     * Helper method para limpar todos os campos do formulário após uma operação bem-sucedida.
+     * Metodo auxiliar para limpar todos os campos do formulário após uma operação bem-sucedida.
      */
     private void limparCampos() {
         produtoIdField.clear();
@@ -142,7 +143,7 @@ public class VendaViewController {
     }
 
     /**
-     * Helper method para exibir uma janela de alerta de erro para o usuário.
+     * Metodo auxiliar para exibir uma janela de alerta de erro padrão para o usuário.
      *
      * @param titulo O título da janela de alerta.
      * @param mensagem A mensagem de erro a ser exibida.
